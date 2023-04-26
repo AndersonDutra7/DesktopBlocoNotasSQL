@@ -6,7 +6,7 @@ from view.tela_bloco_de_notas import MainWindow
 
 db = DataBase()
 db.connect()
-db.create_table_bloco_de_notas()
+db.create_ta0ble_bloco_de_notas()
 db.close_connection()
 
 app = QApplication(sys.argv)
