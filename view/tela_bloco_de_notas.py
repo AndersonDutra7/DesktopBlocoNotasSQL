@@ -11,10 +11,14 @@ from PySide6.QtWidgets import (QMainWindow, QVBoxLayout, QLabel, QLineEdit, QWid
 from model.bloco_de_notas import Bloco_De_Notas
 from controller.bloco_de_notas_dao import DataBase
 
+from infra.configs.connection import DBConnectionHandler
+
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
 
+        conn = DBConnectionHandler()
+        conn.create_database()
         self.setMinimumSize(458, 450)
 
         self.setWindowTitle('BLOCO DE NOTAS')
