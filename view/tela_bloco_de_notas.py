@@ -8,9 +8,6 @@ from PySide6.QtCore import QSize
 from PySide6.QtWidgets import (QMainWindow, QVBoxLayout, QLabel, QLineEdit, QWidget, QPushButton,
                                QMessageBox, QSizePolicy, QTableWidget, QAbstractItemView, QTableWidgetItem, QTextEdit)
 
-from model.bloco_de_notas import Bloco_De_Notas
-from controller.bloco_de_notas_dao import DataBase
-
 from infra.configs.connection import DBConnectionHandler
 
 class MainWindow(QMainWindow):
