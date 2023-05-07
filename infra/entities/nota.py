@@ -6,7 +6,7 @@ class Nota(Base):
     __tablename__ = 'nota'
 
     # Colunas da tabela que serão criadas na tabela
-    id_nota = Column(Integer, autoincrement=True, primaty_key=True)
+    id_nota = Column(Integer, autoincrement=True, primary_key=True)
     nome_nota = Column(String(length=100), nullable=False)
     data_nota = Column(DateTime)
     texto_nota = Column(String(length=100), nullable=False)

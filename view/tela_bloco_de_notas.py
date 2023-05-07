@@ -1,6 +1,3 @@
-import requests
-import json
-import sys
 from datetime import datetime
 
 from PySide6 import QtWidgets
@@ -9,15 +6,16 @@ from PySide6.QtWidgets import (QMainWindow, QVBoxLayout, QLabel, QLineEdit, QWid
                                QMessageBox, QSizePolicy, QTableWidget, QAbstractItemView, QTableWidgetItem, QTextEdit)
 
 from infra.configs.connection import DBConnectionHandler
+from infra.repository.nota_repository import NotasRepository
+from infra.entities.nota import Nota
 
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
 
         conn = DBConnectionHandler()
-        conn.create_database()
+        # conn.__create_database()
         self.setMinimumSize(458, 450)
-
         self.setWindowTitle('BLOCO DE NOTAS')
 
         self.lbl_id = QLabel('ID')
@@ -72,10 +70,10 @@ class MainWindow(QMainWindow):
         self.popular_tabela_notas_cadastradas()
 
     def salvar_nota(self):
-        db = DataBase()
+        db = NotasRepository()
 
-        nota = Bloco_De_Notas(
-            id = self.txt_id.text(),
+        nota = Nota(
+            id_nota = None,
             nome_nota = self.txt_nome_nota.text(),
             texto_nota = self.txt_nota.toPlainText(),
             data_nota = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -83,27 +81,28 @@ class MainWindow(QMainWindow):
 
         if self.btn_salvar.text() == 'Salvar':
             if (self.txt_nome_nota.text().split()) and (self.txt_nota.toPlainText().split()):
-                retorno = db.criar_nota(nota)
+                retorno = db.insert(nota)
                 self.btn_limpar.setVisible(True)
                 if retorno == 'Ok':
                     msg = QMessageBox()
                     msg.setWindowTitle('Criação de Nota.')
                     msg.setText('Nota salva com sucesso!')
                     msg.exec()
-                elif retorno == 'UNIQUE constraint failed: BLOCO_DE_NOTAS.ID':
+
+                else:
                     msg = QMessageBox()
-                    msg.setIcon(QMessageBox.Critical)
-                    msg.setWindowTitle('Erro ao Criar Nota!')
-                    msg.setText(f'O ID {self.txt_id.text()} já existe com o nome {self.txt_nome_nota.text()}')
+                    msg.setWindowTitle('Erro de Sistema.')
+                    msg.setText('Nota Não Criada!')
                     msg.exec()
+
             else:
                 msg = QMessageBox()
                 msg.setIcon(QMessageBox.Critical)
                 msg.setWindowTitle('Erro ao Criar Nota!')
-                msg.setText('Os campos devem ser preenchidos ...')
+                msg.setText('Os campos "TITULO" e "TEXTO" devem ser preenchidos ...')
                 msg.exec()
         elif self.btn_salvar.text() == 'Atualizar':
-            retorno = db.editar_nota(nota)
+            retorno = db.update(nota)
             if retorno == 'Ok':
                 msg = QMessageBox()
                 msg.setIcon(QMessageBox.Information)
@@ -122,8 +121,8 @@ class MainWindow(QMainWindow):
 
     def consultar_nota(self):
         if self.txt_id.text() != '':
-            db = DataBase()
-            retorno = db.consulta_todas_notas(self.txt_id.text())
+            db = NotasRepository()
+            retorno = db.select_all(self.txt_id.text())
 
             if retorno is not None:
                 self.btn_salvar.setText('Atualizar')
@@ -137,7 +136,7 @@ class MainWindow(QMainWindow):
                 self.btn_remover.setVisible(True)
 
     def remover_nota(self):
-        db = DataBase()
+        db = NotasRepository()
         msg = QMessageBox()
         msg.setWindowTitle('Remover Nota')
         msg.setText('Confirma a exclusão abaixo?!')
@@ -149,7 +148,7 @@ class MainWindow(QMainWindow):
         resposta = msg.exec()
 
         if resposta == QMessageBox.Yes:
-            retorno = db.excluir_nota(self.txt_id.text())
+            retorno = db.delete(self.txt_id.text())
             if retorno == 'Ok':
                 nv_msg = QMessageBox()
                 nv_msg.setWindowTitle('Remover Nota')
@@ -180,13 +179,19 @@ class MainWindow(QMainWindow):
 
     def popular_tabela_notas_cadastradas(self):
         self.tabela_notas_cadastradas.setRowCount(0)
-        db = DataBase()
-        lista_notas = db.consulta_todas_notas()
+        db = NotasRepository()
+        lista_notas = db.select_all()
         self.tabela_notas_cadastradas.setRowCount(len(lista_notas))
 
-        for linha, nota in enumerate(lista_notas):
-            for coluna, valor in enumerate(nota):
-                self.tabela_notas_cadastradas.setItem(linha, coluna, QTableWidgetItem(str(valor)))
+        linha = 0
+
+        for notas in lista_notas:
+            valores = [notas.id_nota, notas.nome_nota, notas.data_nota, notas.texto_nota ]
+            for valor in valores:
+                item = QTableWidgetItem(str(valor))
+                self.tabela_notas_cadastradas.setItem(linha, valores.index(valor), item)
+                self.tabela_notas_cadastradas.item(linha, valores.index(valor))
+            linha += 1
 
     def carregar_dados(self, row, column):
         self.txt_id.setStyleSheet("background-color: white;")
