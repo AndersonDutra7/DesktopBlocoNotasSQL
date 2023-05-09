@@ -5,8 +5,7 @@ from infra.configs.base import Base
 class DBConnectionHandler:
     def __init__(self):
         # Dados de endereço do banco de dados
-        # self.__connection_string = 'mysql+pymysql://root:Senac2021@localhost:3306/notas'
-        self.__connection_string = 'mysql+pymysql://root:Gremiofbpa16!@localhost:3308/notas'
+        self.__connection_string = 'mysql+pymysql://root:Senac2021@localhost:3306/notas'
         # Instância do engine(gerenciador do banco)
         self.__engine = self.__create_database_engine()
         # Sessão nula para que possa ser alocada uma nova ao ser instanciado um obj

@@ -14,7 +14,6 @@ class MainWindow(QMainWindow):
         super().__init__()
 
         conn = DBConnectionHandler()
-        # conn.__create_database()
         self.setMinimumSize(458, 450)
         self.setWindowTitle('BLOCO DE NOTAS')
 
@@ -73,7 +72,7 @@ class MainWindow(QMainWindow):
         db = NotasRepository()
 
         nota = Nota(
-            id_nota = None,
+            id_nota = self.txt_id.text(),
             nome_nota = self.txt_nome_nota.text(),
             texto_nota = self.txt_nota.toPlainText(),
             data_nota = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -81,6 +80,7 @@ class MainWindow(QMainWindow):
 
         if self.btn_salvar.text() == 'Salvar':
             if (self.txt_nome_nota.text().split()) and (self.txt_nota.toPlainText().split()):
+                nota.id_nota = None
                 retorno = db.insert(nota)
                 self.btn_limpar.setVisible(True)
                 if retorno == 'Ok':
@@ -102,7 +102,7 @@ class MainWindow(QMainWindow):
                 msg.setText('Os campos "TITULO" e "TEXTO" devem ser preenchidos ...')
                 msg.exec()
         elif self.btn_salvar.text() == 'Atualizar':
-            retorno = db.update(nota)
+            retorno = db.update(nota.id_nota, nota.nome_nota, nota.texto_nota)
             if retorno == 'Ok':
                 msg = QMessageBox()
                 msg.setIcon(QMessageBox.Information)
@@ -113,7 +113,7 @@ class MainWindow(QMainWindow):
                 msg = QMessageBox()
                 msg.setIcon(QMessageBox.Critical)
                 msg.setWindowTitle('Erro ao Atualizar Nota! ')
-                msg.setText('Alguma coisa não esta certa!\nPor favor, tente novamente!')
+                msg.setText('Algo deu errado!\nPor favor, contacte o TI!')
                 msg.exec()
         self.popular_tabela_notas_cadastradas()
         self.btn_limpar.setVisible(False)
