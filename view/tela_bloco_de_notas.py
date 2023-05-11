@@ -5,7 +5,6 @@ from PySide6.QtCore import QSize
 from PySide6.QtWidgets import (QMainWindow, QVBoxLayout, QLabel, QLineEdit, QWidget, QPushButton,
                                QMessageBox, QSizePolicy, QTableWidget, QAbstractItemView, QTableWidgetItem, QTextEdit)
 
-from infra.configs.connection import DBConnectionHandler
 from infra.repository.nota_repository import NotasRepository
 from infra.entities.nota import Nota
 
@@ -13,7 +12,6 @@ class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
 
-        conn = DBConnectionHandler()
         self.setMinimumSize(458, 450)
         self.setWindowTitle('BLOCO DE NOTAS')
 
